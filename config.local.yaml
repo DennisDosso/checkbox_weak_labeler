@@ -1,0 +1,17 @@
+# Configuration for the local RF-DETR weak labeler
+# ------------------------------------------------
+# Copy this file and edit values as needed before running.
+#
+# Override any value via environment variables with the prefix LOCAL_LABELER_:
+#   LOCAL_LABELER_MODEL_PATH=models/rfdetr-nano.pth
+#   LOCAL_LABELER_CONFIDENCE_THRESHOLD=0.40
+#   LOCAL_LABELER_DEVICE=cpu
+#
+# To use a custom config file path:
+#   LOCAL_LABELER_CONFIG_PATH=/path/to/my-config.yaml
+
+# Path to the RF-DETR .pth weights file (REQUIRED - set this before running)
+model_path: "models/rfdetr-nano.pth"
+
+# Confidence threshold for detections (0.0 - 1.0)
+confidence_threshold: 0.35
