@@ -2,7 +2,7 @@ import os
 import json
 import glob
 import argparse
-from tqdm import tqdm  # NEW: Import the progress bar
+from tqdm import tqdm  # Import the progress bar
 
 # Import our modularized code
 from src.config import CATEGORY_MAPPING, COCO_CATEGORIES

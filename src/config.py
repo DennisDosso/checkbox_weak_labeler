@@ -20,6 +20,7 @@ CATEGORY_MAPPING = {
 
 # Base COCO Categories
 COCO_CATEGORIES = [
+    {"id": 0, "name": "signature", "supercategory": "signature"},
     {"id": 1, "name": "checked", "supercategory": "checkbox"},
     {"id": 2, "name": "unchecked", "supercategory": "checkbox"}
 ]
