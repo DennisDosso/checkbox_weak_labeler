@@ -28,7 +28,7 @@ _THIS_FILE = Path(__file__).resolve()
 PROJECT_ROOT = _THIS_FILE.parents[2]
 
 # ---------------------------------------------------------------------------
-# COCO category definitions for this labeler (signature only)
+# COCO category definitions for this labeler (signature only for now)
 # ---------------------------------------------------------------------------
 LOCAL_COCO_CATEGORIES = [
     {"id": 0, "name": "signature", "supercategory": "signature"}

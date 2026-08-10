@@ -8,9 +8,6 @@ load_dotenv(".env.local")
 ROBOFLOW_API_KEY = os.getenv("ROBOFLOW_API_KEY")
 ROBOFLOW_API_URL = os.getenv("ROBOFLOW_API_URL", "https://serverless.roboflow.com")
 
-if not ROBOFLOW_API_KEY:
-    raise ValueError("ROBOFLOW_API_KEY is missing. Please check your .env.local file.")
-
 # Dataset Category Mappings
 CATEGORY_MAPPING = {
     "signature": 0,

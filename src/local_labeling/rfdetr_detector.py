@@ -141,9 +141,9 @@ class RFDetrDetector:
             return results
 
         for bbox, conf, cls_id in zip(
-            detections_sv.xyxy,
-            detections_sv.confidence,
-            detections_sv.class_id,
+            detections_sv.xyxy, # type: ignore
+            detections_sv.confidence, # type: ignore
+            detections_sv.class_id, # type: ignore
         ):
             try:
                 label = self._model.class_names[cls_id]
