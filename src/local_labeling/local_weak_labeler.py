@@ -433,7 +433,8 @@ if __name__ == "__main__":
         os.environ["LOCAL_LABELER_CONFIG_PATH"] = args.config
 
     # Load settings (env vars + YAML + defaults)
-    settings = LocalSettings()
+    # model_path is supplied by LOCAL_LABELER_MODEL_PATH or YAML config.
+    settings = LocalSettings()  # type: ignore[call-arg]
 
     # CLI --confidence flag overrides config value
     if args.confidence is not None:
