@@ -1,5 +1,7 @@
 """Module for analyzing and validating datasets formatted in the COCO JSON format."""
 
+from __future__ import annotations
+
 import json
 from collections import Counter
 from pathlib import Path
@@ -16,6 +18,7 @@ class CocoAnalysisSummary(TypedDict):
     class_counts: Dict[str, int]
     unannotated_image_paths: List[str]
     out_of_bounds_errors: List[str]
+    categories_with_ids: List[Dict]
 
 
 class CocoDatasetAnalyzer:
@@ -35,7 +38,7 @@ class CocoDatasetAnalyzer:
         """Loads the JSON file from disk."""
         if not self.file_path.exists():
             raise FileNotFoundError(f"COCO file not found at: {self.file_path}")
-        
+
         with open(self.file_path, "r", encoding="utf-8") as f:
             return json.load(f)
 
@@ -63,6 +66,12 @@ class CocoDatasetAnalyzer:
         image_map = {img["id"]: img for img in images}
         classes = sorted(list(category_map.values()))
 
+        # Build categories_with_ids: sorted by id
+        categories_with_ids = sorted(
+            [{"id": cat["id"], "name": cat["name"]} for cat in categories],
+            key=lambda c: c["id"],
+        )
+
         # 2. Count instances per class and map annotations to images
         annotation_counts = Counter()
         image_annotation_tracker = {img_id: 0 for img_id in image_map.keys()}
@@ -77,14 +86,14 @@ class CocoDatasetAnalyzer:
             img_id = ann.get("image_id")
             if img_id in image_annotation_tracker:
                 image_annotation_tracker[img_id] += 1
-            
+
             # Spatial Out-of-Bounds Validation
             bbox = ann.get("bbox")  # COCO format: [x_min, y_min, width, height]
             if bbox and img_id in image_map:
                 img_meta = image_map[img_id]
                 img_w, img_h = img_meta.get("width", 0), img_meta.get("height", 0)
                 x, y, w, h = bbox
-                
+
                 # Check if coordinates cross image limits
                 if x < 0 or y < 0 or (x + w) > img_w or (y + h) > img_h:
                     out_of_bounds_errors.append(
@@ -115,4 +124,45 @@ class CocoDatasetAnalyzer:
             "class_counts": class_counts,
             "unannotated_image_paths": unannotated_image_paths,
             "out_of_bounds_errors": out_of_bounds_errors,
+            "categories_with_ids": categories_with_ids,
         }
+
+
+def compare_datasets(paths: list[str | Path]) -> list[dict]:
+    """Analyze and compare multiple COCO JSON datasets.
+
+    Accepts a list of N file paths (N >= 1). For each path, instantiates a
+    ``CocoDatasetAnalyzer`` and calls ``get_summary()``. If a file raises an
+    exception (not found, bad JSON, missing keys, etc.), the result entry
+    contains an ``"error"`` key instead of ``"summary"``.
+
+    Args:
+        paths: List of paths to COCO JSON files.
+
+    Returns:
+        A list of result dicts, one per file, in the same order as ``paths``.
+        Each dict has:
+
+        - ``"file"`` (str): the file path as supplied.
+        - ``"summary"`` (CocoAnalysisSummary): the full summary, **or**
+        - ``"error"`` (str): error message if loading/analysis failed.
+
+    Example::
+
+        results = compare_datasets(["train.json", "val.json"])
+        for r in results:
+            if "error" in r:
+                print(f"{r['file']}: ERROR — {r['error']}")
+            else:
+                print(f"{r['file']}: {r['summary']['total_images']} images")
+    """
+    results: list[dict] = []
+    for path in paths:
+        file_str = str(path)
+        try:
+            analyzer = CocoDatasetAnalyzer(path)
+            summary = analyzer.get_summary()
+            results.append({"file": file_str, "summary": summary})
+        except Exception as exc:  # noqa: BLE001
+            results.append({"file": file_str, "error": str(exc)})
+    return results

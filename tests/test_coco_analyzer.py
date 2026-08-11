@@ -206,3 +206,127 @@ class TestCocoDatasetAnalyzerErrors:
         path = _write_coco_json(data)
         with pytest.raises(KeyError):
             CocoDatasetAnalyzer(path)
+# ---------------------------------------------------------------------------
+# New tests: Task 1a — categories_with_ids field
+# ---------------------------------------------------------------------------
+
+from src.utils.coco_dataset_analyzer import compare_datasets  # noqa: E402
+
+
+class TestCocoAnalysisSummaryNewFields:
+    """Tests for the new categories_with_ids field in CocoAnalysisSummary."""
+
+    def test_categories_with_ids_present(self):
+        """The key 'categories_with_ids' must be present in the summary."""
+        data = _minimal_coco(
+            categories=[
+                {"id": 0, "name": "signature"},
+                {"id": 1, "name": "checked"},
+            ]
+        )
+        path = _write_coco_json(data)
+        summary = CocoDatasetAnalyzer(path).get_summary()
+        assert "categories_with_ids" in summary
+
+    def test_categories_with_ids_content(self):
+        """Each entry must have 'id' and 'name' matching the input categories."""
+        cats = [
+            {"id": 0, "name": "signature"},
+            {"id": 1, "name": "checked"},
+        ]
+        data = _minimal_coco(categories=cats)
+        path = _write_coco_json(data)
+        summary = CocoDatasetAnalyzer(path).get_summary()
+        result = summary["categories_with_ids"]
+        # Check that all expected entries are present
+        result_by_id = {entry["id"]: entry["name"] for entry in result}
+        for cat in cats:
+            assert cat["id"] in result_by_id
+            assert result_by_id[cat["id"]] == cat["name"]
+
+    def test_categories_with_ids_sorted_by_id(self):
+        """categories_with_ids must be sorted by 'id' in ascending order."""
+        data = _minimal_coco(
+            categories=[
+                {"id": 5, "name": "unchecked"},
+                {"id": 1, "name": "checked"},
+                {"id": 0, "name": "signature"},
+            ]
+        )
+        path = _write_coco_json(data)
+        summary = CocoDatasetAnalyzer(path).get_summary()
+        ids = [entry["id"] for entry in summary["categories_with_ids"]]
+        assert ids == sorted(ids)
+
+
+# ---------------------------------------------------------------------------
+# New tests: Task 1b — compare_datasets() function
+# ---------------------------------------------------------------------------
+
+
+class TestCompareDatasets:
+    """Tests for the compare_datasets() top-level function."""
+
+    def test_compare_single_file(self):
+        """Calling with one valid path returns a list of length 1 with 'file' and 'summary'."""
+        data = _minimal_coco(
+            images=[{"id": 1, "file_name": "img.jpg", "width": 100, "height": 100}],
+            annotations=[
+                {"id": 1, "image_id": 1, "category_id": 0, "bbox": [0, 0, 10, 10]},
+            ],
+        )
+        path = _write_coco_json(data)
+        results = compare_datasets([str(path)])
+        assert len(results) == 1
+        assert "file" in results[0]
+        assert "summary" in results[0]
+        assert "error" not in results[0]
+
+    def test_compare_multiple_files(self):
+        """Calling with two valid paths returns two result dicts with correct total_images."""
+        data1 = _minimal_coco(
+            images=[
+                {"id": 1, "file_name": "a.jpg", "width": 100, "height": 100},
+                {"id": 2, "file_name": "b.jpg", "width": 100, "height": 100},
+            ],
+        )
+        data2 = _minimal_coco(
+            images=[
+                {"id": 1, "file_name": "c.jpg", "width": 100, "height": 100},
+            ],
+        )
+        path1 = _write_coco_json(data1)
+        path2 = _write_coco_json(data2)
+        results = compare_datasets([str(path1), str(path2)])
+        assert len(results) == 2
+        assert results[0]["summary"]["total_images"] == 2
+        assert results[1]["summary"]["total_images"] == 1
+
+    def test_compare_missing_file_returns_error(self):
+        """If one path does not exist, that entry has an 'error' key instead of 'summary'."""
+        data = _minimal_coco()
+        path = _write_coco_json(data)
+        results = compare_datasets([str(path), "/nonexistent/missing_file.json"])
+        # First entry should succeed
+        assert "summary" in results[0]
+        assert "error" not in results[0]
+        # Second entry should be an error
+        assert "error" in results[1]
+        assert "summary" not in results[1]
+
+    def test_compare_preserves_order(self):
+        """Results are returned in the same order as the input paths."""
+        data_a = _minimal_coco(
+            images=[{"id": 1, "file_name": "alpha.jpg", "width": 50, "height": 50}],
+        )
+        data_b = _minimal_coco(
+            images=[
+                {"id": 1, "file_name": "beta1.jpg", "width": 50, "height": 50},
+                {"id": 2, "file_name": "beta2.jpg", "width": 50, "height": 50},
+            ],
+        )
+        path_a = _write_coco_json(data_a)
+        path_b = _write_coco_json(data_b)
+        results = compare_datasets([str(path_a), str(path_b)])
+        assert results[0]["summary"]["total_images"] == 1
+        assert results[1]["summary"]["total_images"] == 2

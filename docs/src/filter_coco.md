@@ -100,7 +100,7 @@ python -m src.utils.filter_coco \
 |----------|-------|----------|-------------|
 | `--input` | `-i` | **Yes** | Path to input COCO JSON file |
 | `--mapping` | `-m` | **Yes** | Path to category mapping JSON file |
-| `--output` | `-o` | **Yes** | Path to output COCO JSON file (silently overwritten) |
+| `--output` | `-o` | **No** | Path to output COCO JSON file (silently overwritten). If missing, it is used the same value of `--input` |
 | `--drop-unannotated` | — | No | Drop images with zero annotations after filtering |
 
 ### Example — user scenario
