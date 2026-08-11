@@ -312,7 +312,7 @@ def generate_local_weak_labels(
                         "bbox": coco_bbox,
                         "area": coco_width * coco_height,
                         "iscrowd": 0,
-                        "confidence": detection["confidence"],
+                        "score": detection["confidence"],
                     }
                 )
                 annotation_id_counter += 1

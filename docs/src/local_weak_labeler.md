@@ -94,7 +94,7 @@ The output file is a standard COCO JSON with the following structure:
             "bbox": [120, 340, 210, 55],
             "area": 11550,
             "iscrowd": 0,
-            "confidence": 0.87341
+            "score": 0.87341
         }
     ],
     "categories": [

@@ -250,7 +250,7 @@ def generate_weak_labels(
                         "bbox": bbox,
                         "area": prediction['width'] * prediction['height'],
                         "iscrowd": 0,
-                        "confidence": prediction['confidence']
+                        "score": prediction['confidence']
                     })
 
                     annotation_id_counter += 1
