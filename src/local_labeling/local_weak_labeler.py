@@ -168,14 +168,27 @@ def generate_local_weak_labels(
     else:
         logger.info("Scanning directory: %s", input_dir)
 
-    image_files: list[str] = []
+    raw_image_files: list[str] = []
     for ext in _VALID_EXTENSIONS:
         if recursive:
             pattern = os.path.join(input_dir, "**", ext)
-            image_files.extend(glob.glob(pattern, recursive=True))
+            raw_image_files.extend(glob.glob(pattern, recursive=True))
         else:
             pattern = os.path.join(input_dir, ext)
-            image_files.extend(glob.glob(pattern))
+            raw_image_files.extend(glob.glob(pattern))
+
+    # Deduplicate paths to prevent case-insensitive OS duplication
+    # and ensure unique file names for the COCO format
+    unique_basenames = set()
+    image_files: list[str] = []
+    
+    for p in raw_image_files:
+        abs_path = os.path.abspath(p)
+        basename = os.path.basename(abs_path)
+        
+        if basename not in unique_basenames:
+            unique_basenames.add(basename)
+            image_files.append(abs_path)
 
     total_found = len(image_files)
 

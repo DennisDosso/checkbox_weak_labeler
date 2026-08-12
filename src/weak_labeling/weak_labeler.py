@@ -102,7 +102,7 @@ def generate_weak_labels(
     """
     output_path = Path(output_json)
 
-    # ------------------------------------------------------------------
+   # ------------------------------------------------------------------
     # Collect image files
     # ------------------------------------------------------------------
     if recursive:
@@ -110,16 +110,30 @@ def generate_weak_labels(
     else:
         logger.info("Scanning directory: %s", input_dir)
 
-    image_files = []
+    raw_image_files = []
     valid_extensions = ["*.jpg", "*.jpeg", "*.JPG", "*.JPEG", "*.png", "*.PNG"]
 
     for ext in valid_extensions:
         if recursive:
             search_pattern = os.path.join(input_dir, "**", ext)
-            image_files.extend(glob.glob(search_pattern, recursive=True))
+            raw_image_files.extend(glob.glob(search_pattern, recursive=True))
         else:
             search_pattern = os.path.join(input_dir, ext)
-            image_files.extend(glob.glob(search_pattern))
+            raw_image_files.extend(glob.glob(search_pattern))
+
+    # Deduplicate paths to prevent case-insensitive OS duplication
+    # and ensure unique COCO file names
+    unique_basenames = set()
+    image_files = []
+    
+    for p in raw_image_files:
+        # Use absolute path to normalize the string
+        abs_path = os.path.abspath(p)
+        basename = os.path.basename(abs_path)
+        
+        if basename not in unique_basenames:
+            unique_basenames.add(basename)
+            image_files.append(abs_path)
 
     total_found = len(image_files)
 
