@@ -87,10 +87,10 @@ The output category list is sorted by new `id`.
 ## CLI Usage
 
 ```bash
-python -m src.utils.filter_coco \
-    -i  input/_annotations.merged.coco.json \
-    -m  category_mapping.json \
-    -o  output/_annotations.filtered.coco.json \
+python -m src.utils.filter_coco `
+    -i  input/_annotations.merged.coco.json `
+    -m  category_mapping.json `
+    -o  output/_annotations.filtered.coco.json `
     [--drop-unannotated]
 ```
 

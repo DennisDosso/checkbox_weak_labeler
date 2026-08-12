@@ -105,12 +105,12 @@ The JSON structure follows the standard COCO format:
 
 ## CLI Usage
 
-```bash
-python -m src.utils.vertical_merge_coco \
-    --input1-images /path/to/dataset1/images \
-    --input1-json   /path/to/dataset1/_annotations.coco.json \
-    --input2-images /path/to/dataset2/images \
-    --input2-json   /path/to/dataset2/_annotations.coco.json \
+```powershell
+python -m src.utils.vertical_merge_coco `
+    --input1-images /path/to/dataset1/images `
+    --input1-json   /path/to/dataset1/_annotations.coco.json `
+    --input2-images /path/to/dataset2/images `
+    --input2-json   /path/to/dataset2/_annotations.coco.json `
     --output        /path/to/output_dir
 ```
 
