@@ -14,3 +14,17 @@ wheels/
 
 # everything contained in directory resources
 /resources/**
+# Output datasets (usually large, not versioned)
+output/
+*.coco.json
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+/output/

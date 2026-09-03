@@ -11,7 +11,7 @@
 #   LOCAL_LABELER_CONFIG_PATH=/path/to/my-config.yaml
 
 # Path to the RF-DETR .pth weights file (REQUIRED - set this before running)
-model_path: "resources/models/rfdetr-nano.pt"
+model_path: "resources/models/rfdetr-nano-signatures.pt"
 
 # Confidence threshold for detections (0.0 - 1.0)
 confidence_threshold: 0.50

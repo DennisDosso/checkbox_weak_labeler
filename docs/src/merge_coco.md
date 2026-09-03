@@ -72,9 +72,9 @@ The merged file is a standard COCO JSON with the following top-level keys:
 ## CLI Usage
 
 ```bash
-python -m src.utils.merge_coco \
-    -i path/to/file1.json path/to/file2.json \
-    -o path/to/merged_output.json \
+python -m src.utils.merge_coco `
+    -i path/to/file1.json path/to/file2.json `
+    -o path/to/merged_output.json `
     [--verbose]
 ```
 
@@ -90,16 +90,16 @@ python -m src.utils.merge_coco \
 
 **Basic merge of two files:**
 ```bash
-python -m src.utils.merge_coco \
-    -i data/_annotations.coco.json data/_annotations.checkboxes.coco.json \
+python -m src.utils.merge_coco `
+    -i data/_annotations.coco.json data/_annotations.checkboxes.coco.json `
     -o data/merged.json
 ```
 
 **Merge with verbose conflict report:**
 ```bash
-python -m src.utils.merge_coco \
-    -i data/signatures.json data/checkboxes.json data/extra.json \
-    -o data/merged.json \
+python -m src.utils.merge_coco `
+    -i data/signatures.json data/checkboxes.json data/extra.json `
+    -o data/merged.json `
     --verbose
 ```
 
